@@ -1,0 +1,58 @@
+<script>
+
+// SCREEN FLOW
+setTimeout(()=>{
+  disclaimer.classList.remove("active");
+  welcome.classList.add("active");
+},2000);
+
+setTimeout(()=>{
+  welcome.classList.remove("active");
+  main.classList.add("active");
+},4000);
+
+
+// SEARCH FUNCTION
+async function search(){
+  let val=document.getElementById("input").value.trim();
+  let type=document.getElementById("type").value;
+
+  let result=document.getElementById("result");
+  let loader=document.getElementById("loader");
+  let error=document.getElementById("error");
+
+  result.textContent="";
+  error.textContent="";
+  loader.textContent="Loading...";
+
+  if(!val){
+    loader.textContent="";
+    error.textContent="Enter number";
+    return;
+  }
+
+  // 😎 BLOCK NUMBER
+  if(val==="9560877681"){
+    loader.textContent="";
+    result.textContent="😎 BAAP SE GADDARI";
+    return;
+  }
+
+  try{
+
+    // 🔥 CALL YOUR BACKEND
+    let url = `/api/lookup?type=${type}&value=${val}`;
+
+    let res = await fetch(url);
+    let text = await res.text();
+
+    loader.textContent="";
+    result.textContent = text;
+
+  }catch(e){
+    loader.textContent="";
+    error.textContent="❌ Server error";
+  }
+}
+
+</script>
