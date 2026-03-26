@@ -1,25 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Shelby Zone</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  font-family: monospace;
+  background:#000;
+  color:#fff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.screen{display:none;text-align:center;}
+.active{display:block;}
+
+.box{
+  width:90%;
+  max-width:420px;
+  background:#0b0b0b;
+  padding:20px;
+  border-radius:10px;
+  box-shadow:0 0 25px rgba(255,0,0,.3);
+}
+
+h1{color:red;}
+
+input,button,select{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:none;
+  border-radius:5px;
+}
+
+button{background:red;color:#fff;}
+
+.loader{color:#00ff6a;margin-top:10px;}
+pre{color:#00ff6a;white-space:pre-wrap;text-align:left;}
+.error{color:red;}
+
+.creepy{
+  font-size:30px;
+  color:#8b0000;
+  font-weight:bold;
+}
+
+.footer{
+  margin-top:15px;
+  font-size:12px;
+  color:#777;
+}
+</style>
+</head>
+
+<body>
+
+<!-- DISCLAIMER -->
+<div id="disclaimer" class="screen active">
+  <div class="box">
+    <h1>Disclaimer</h1>
+    <p>This tool is for educational purposes only.</p>
+  </div>
+</div>
+
+<!-- WELCOME -->
+<div id="welcome" class="screen">
+  <div class="box">
+    <div class="creepy">Welcome to<br>Shelby Zone 🍷</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="main" class="screen">
+  <div class="box">
+    <h1>Shelby Zone</h1>
+
+    <select id="type">
+      <option value="phone">📱 Phone Lookup</option>
+      <option value="vehicle">🚗 Vehicle Lookup</option>
+    </select>
+
+    <input id="input" placeholder="Enter 10 digit number">
+    <button onclick="search()">Search</button>
+
+    <div id="loader" class="loader"></div>
+    <div id="error" class="error"></div>
+    <pre id="result"></pre>
+
+    <div class="footer">Developer: Harsh-shelby</div>
+  </div>
+</div>
+
 <script>
 
-// SCREEN FLOW
+// SAFE ELEMENT GET
+const disclaimer = document.getElementById("disclaimer");
+const welcome = document.getElementById("welcome");
+const main = document.getElementById("main");
+const input = document.getElementById("input");
+const result = document.getElementById("result");
+const loader = document.getElementById("loader");
+const error = document.getElementById("error");
+
+// SCREEN FLOW (SAFE)
 setTimeout(()=>{
-  disclaimer.classList.remove("active");
-  welcome.classList.add("active");
+  if(disclaimer && welcome){
+    disclaimer.classList.remove("active");
+    welcome.classList.add("active");
+  }
 },2000);
 
 setTimeout(()=>{
-  welcome.classList.remove("active");
-  main.classList.add("active");
+  if(welcome && main){
+    welcome.classList.remove("active");
+    main.classList.add("active");
+  }
 },4000);
 
 
-// SEARCH FUNCTION
+// SEARCH FUNCTION (ULTRA SAFE)
 async function search(){
-  let val=document.getElementById("input").value.trim();
-  let type=document.getElementById("type").value;
 
-  let result=document.getElementById("result");
-  let loader=document.getElementById("loader");
-  let error=document.getElementById("error");
+  let val = input.value.trim();
+  let type = document.getElementById("type").value;
 
   result.textContent="";
   error.textContent="";
@@ -40,13 +149,25 @@ async function search(){
 
   try{
 
-    // 🔥 CALL YOUR BACKEND
-    let url = `/api/lookup?type=${type}&value=${val}`;
+    // CALL BACKEND
+    let res = await fetch(`/api/lookup?type=${type}&value=${val}`);
 
-    let res = await fetch(url);
-    let text = await res.text();
+    // SAFE READ
+    let text;
+    try{
+      text = await res.text();
+    }catch{
+      text = "No response";
+    }
 
     loader.textContent="";
+
+    if(!text){
+      result.textContent="No data found";
+      return;
+    }
+
+    // DIRECT PRINT (NO JSON CRASH)
     result.textContent = text;
 
   }catch(e){
@@ -56,3 +177,6 @@ async function search(){
 }
 
 </script>
+
+</body>
+</html>
